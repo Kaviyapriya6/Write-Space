@@ -38,14 +38,16 @@ import {
   ChevronDown,
   ChevronUp,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Star,
+  Zap
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 const Post = () => {
   const { username, slug } = useParams();
@@ -428,10 +430,13 @@ const Post = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-slate-200 border-t-slate-900 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading post...</p>
+          <div className="relative">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-slate-200 border-t-blue-600 mx-auto mb-6"></div>
+            <Zap className="h-6 w-6 text-blue-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+          </div>
+          <p className="text-slate-600 font-medium">Loading amazing content...</p>
         </div>
       </div>
     );
@@ -439,17 +444,21 @@ const Post = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Post not found</h1>
-          <p className="text-slate-600 mb-6">The post you're looking for doesn't exist or has been removed.</p>
-          <Link to="/">
-            <Button className="bg-slate-900 hover:bg-slate-800 text-white">
-              <Home className="h-4 w-4 mr-2" />
-              Go Home
-            </Button>
-          </Link>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-6">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="w-16 h-16 bg-gradient-to-br from-red-100 to-red-200 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertCircle className="h-8 w-8 text-red-600" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 mb-3">Post not found</h1>
+            <p className="text-slate-600 mb-8 leading-relaxed">The post you're looking for doesn't exist or has been removed.</p>
+            <Link to="/">
+              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg">
+                <Home className="h-4 w-4 mr-2" />
+                Go Home
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -459,48 +468,46 @@ const Post = () => {
   const readTime = Math.ceil(post.markdown_content.split(/\s+/).length / 200);
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
+      <div className="bg-white border-b sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Link to="/" className="flex items-center space-x-3">
-                <div className="h-9 w-9 rounded-xl bg-slate-900 flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-white" />
+              <Link to="/" className="flex items-center space-x-2">
+                <div className="h-8 w-8 rounded bg-blue-600 flex items-center justify-center">
+                  <BookOpen className="h-4 w-4 text-white" />
                 </div>
-                <span className="text-xl font-bold text-slate-900">WriteSpace</span>
+                <span className="text-lg font-bold text-gray-900">WriteSpace</span>
               </Link>
-              <div className="h-6 w-px bg-slate-300"></div>
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => navigate(-1)}
-                className="text-slate-600 hover:text-slate-900"
+                className="text-gray-600 hover:text-gray-900"
               >
-                <ArrowLeft className="h-4 w-4 mr-2" />
+                <ArrowLeft className="h-4 w-4 mr-1" />
                 Back
               </Button>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
               {isAuthor && (
                 <>
                   <Link to={`/edit/${post.id}`}>
-                    <Button variant="outline" size="sm" className="border-slate-300">
-                      <Edit className="h-4 w-4 mr-2" />
+                    <Button variant="outline" size="sm">
+                      <Edit className="h-4 w-4 mr-1" />
                       Edit
                     </Button>
                   </Link>
-                  <Button variant="outline" size="sm" onClick={deletePost} className="border-red-300 text-red-600 hover:bg-red-50">
-                    <Trash2 className="h-4 w-4 mr-2" />
+                  <Button variant="outline" size="sm" onClick={deletePost} className="text-red-600 border-red-200 hover:bg-red-50">
+                    <Trash2 className="h-4 w-4 mr-1" />
                     Delete
                   </Button>
                 </>
               )}
               <Link to="/dashboard">
-                <Button size="sm" className="bg-slate-900 hover:bg-slate-800 text-white">
-                  <User className="h-4 w-4 mr-2" />
+                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
                   Dashboard
                 </Button>
               </Link>
@@ -510,460 +517,466 @@ const Post = () => {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-4 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-3 space-y-8">
-              {/* Post Header */}
-              <Card className="border-0 shadow-lg bg-white">
-                <CardContent className="p-8">
-                  {post.cover_image && (
-                    <img
-                      src={post.cover_image}
-                      alt={post.title}
-                      className="w-full h-80 object-cover rounded-xl mb-8"
-                    />
-                  )}
-                  
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center space-x-4">
-                      <Link to={`/${author.username}`}>
-                        <Avatar className="h-14 w-14">
-                          <AvatarImage src={author.avatar_url} />
-                          <AvatarFallback className="bg-slate-900 text-white text-lg">
-                            {author.display_name?.charAt(0) || author.username.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Link>
-                      <div>
-                        <Link to={`/${author.username}`} className="text-lg font-semibold hover:text-blue-600 transition-colors">
-                          {author.display_name || author.username}
-                        </Link>
-                        <div className="flex items-center space-x-3 text-sm text-slate-600">
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>{format(new Date(post.created_at), 'MMM dd, yyyy')}</span>
-                          </div>
-                          <span>•</span>
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-4 w-4" />
-                            <span>{readTime} min read</span>
-                          </div>
-                          <span>•</span>
-                          <div className="flex items-center space-x-1">
-                            <Eye className="h-4 w-4" />
-                            <span>{viewCount} views</span>
-                          </div>
-                        </div>
-                      </div>
+        <div className="max-w-4xl mx-auto">
+          {/* Post Header */}
+          <div className="mb-12">
+            {/* Cover Image */}
+            {post.cover_image && (
+              <div className="mb-8 rounded-lg overflow-hidden">
+                <img
+                  src={post.cover_image}
+                  alt={post.title}
+                  className="w-full h-96 object-cover"
+                />
+              </div>
+            )}
+            
+            {/* Post Meta */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center space-x-4">
+                <Link to={`/${author.username}`}>
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={author.avatar_url} />
+                    <AvatarFallback className="bg-gray-600 text-white">
+                      {author.display_name?.charAt(0) || author.username.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
+                <div>
+                  <Link to={`/${author.username}`} className="text-lg font-semibold hover:text-blue-600 transition-colors block">
+                    {author.display_name || author.username}
+                  </Link>
+                  <div className="flex items-center space-x-4 text-sm text-gray-600">
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="h-4 w-4" />
+                      <span>{format(new Date(post.created_at), 'MMM dd, yyyy')}</span>
                     </div>
-                    
-                    {post.status === 'draft' && (
-                      <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
-                        Draft
-                      </Badge>
-                    )}
-                  </div>
-
-                  <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-6 leading-tight">
-                    {post.title}
-                  </h1>
-                  
-                  {post.excerpt && (
-                    <p className="text-xl text-slate-600 mb-8 leading-relaxed">{post.excerpt}</p>
-                  )}
-
-                  {post.tags && post.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {post.tags.map((tag: string) => (
-                        <Badge key={tag} variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
-                          <Hash className="h-3 w-3 mr-1" />
-                          {tag}
-                        </Badge>
-                      ))}
+                    <span>•</span>
+                    <div className="flex items-center space-x-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{readTime} min read</span>
                     </div>
-                  )}
-
-                  {/* Engagement Actions */}
-                  <div className="flex items-center justify-between border-t border-slate-200 pt-6">
-                    <div className="flex items-center space-x-4">
-                      <Button 
-                        variant={isLiked ? "default" : "outline"} 
-                        size="sm"
-                        onClick={toggleLike}
-                        className={isLiked ? "bg-red-600 hover:bg-red-700 text-white" : "border-slate-300"}
-                      >
-                        <Heart className={`h-4 w-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
-                        {likeCount}
-                      </Button>
-                      <Button variant="outline" size="sm" className="border-slate-300">
-                        <MessageCircle className="h-4 w-4 mr-2" />
-                        {comments.length}
-                      </Button>
-                      <Button 
-                        variant={isBookmarked ? "default" : "outline"} 
-                        size="sm"
-                        onClick={toggleBookmark}
-                        className={isBookmarked ? "bg-blue-600 hover:bg-blue-700 text-white" : "border-slate-300"}
-                      >
-                        <Bookmark className={`h-4 w-4 mr-2 ${isBookmarked ? 'fill-current' : ''}`} />
-                        {isBookmarked ? 'Saved' : 'Save'}
-                      </Button>
-                    </div>
-                    
-                    <div className="relative">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => setShareDialogOpen(!shareDialogOpen)}
-                        className="border-slate-300"
-                      >
-                        <Share2 className="h-4 w-4 mr-2" />
-                        Share
-                      </Button>
-                      
-                      {shareDialogOpen && (
-                        <Card className="absolute right-0 top-12 w-64 border-0 shadow-xl z-50">
-                          <CardContent className="p-4">
-                            <div className="space-y-3">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={copyLink}
-                                className="w-full justify-start"
-                              >
-                                <Copy className="h-4 w-4 mr-2" />
-                                Copy Link
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => shareToSocial('twitter')}
-                                className="w-full justify-start"
-                              >
-                                <Twitter className="h-4 w-4 mr-2" />
-                                Share on Twitter
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => shareToSocial('linkedin')}
-                                className="w-full justify-start"
-                              >
-                                <Linkedin className="h-4 w-4 mr-2" />
-                                Share on LinkedIn
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )}
+                    <span>•</span>
+                    <div className="flex items-center space-x-1">
+                      <Eye className="h-4 w-4" />
+                      <span>{viewCount.toLocaleString()} views</span>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Post Content */}
-              <Card className="border-0 shadow-lg bg-white">
-                <CardContent className="p-8">
-                  <article className="prose prose-slate max-w-none prose-lg">
-                    <ReactMarkdown
-                      components={{
-                        code({ node, inline, className, children, ...props }: any) {
-                          const match = /language-(\w+)/.exec(className || '');
-                          return !inline && match ? (
-                            <SyntaxHighlighter
-                              style={oneDark as any}
-                              language={match[1]}
-                              PreTag="div"
-                              className="rounded-lg"
-                              {...props}
-                            >
-                              {String(children).replace(/\n$/, '')}
-                            </SyntaxHighlighter>
-                          ) : (
-                            <code className="bg-slate-100 px-1 py-0.5 rounded text-sm" {...props}>
-                              {children}
-                            </code>
-                          );
-                        },
-                        blockquote({ children }) {
-                          return (
-                            <blockquote className="border-l-4 border-blue-500 bg-blue-50 p-4 my-6 rounded-r-lg">
-                              {children}
-                            </blockquote>
-                          );
-                        },
-                        table({ children }) {
-                          return (
-                            <div className="overflow-x-auto my-6">
-                              <table className="w-full border-collapse border border-slate-300">
-                                {children}
-                              </table>
-                            </div>
-                          );
-                        },
-                        th({ children }) {
-                          return (
-                            <th className="border border-slate-300 bg-slate-50 px-4 py-2 text-left font-semibold">
-                              {children}
-                            </th>
-                          );
-                        },
-                        td({ children }) {
-                          return (
-                            <td className="border border-slate-300 px-4 py-2">
-                              {children}
-                            </td>
-                          );
-                        }
-                      }}
-                    >
-                      {post.markdown_content}
-                    </ReactMarkdown>
-                  </article>
-                </CardContent>
-              </Card>
-
-              {/* Comments Section */}
-              <Card className="border-0 shadow-lg bg-white">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center text-2xl">
-                      <MessageSquare className="h-6 w-6 mr-3" />
-                      Comments ({comments.length})
-                    </CardTitle>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-slate-600">Sort by:</span>
-                      <Button
-                        variant={sortComments === 'newest' ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setSortComments('newest')}
-                        className={sortComments === 'newest' ? 'bg-slate-900 text-white' : ''}
-                      >
-                        Newest
-                      </Button>
-                      <Button
-                        variant={sortComments === 'oldest' ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setSortComments('oldest')}
-                        className={sortComments === 'oldest' ? 'bg-slate-900 text-white' : ''}
-                      >
-                        Oldest
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {/* Comment Form */}
-                  {currentUser ? (
-                    <div className="mb-8 p-6 bg-slate-50 rounded-xl">
-                      <div className="flex items-start space-x-4">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={currentUserProfile?.avatar_url} />
-                          <AvatarFallback className="bg-slate-900 text-white">
-                            {currentUserProfile?.display_name?.charAt(0) || currentUser.email?.charAt(0)}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-4">
-                          {replyingTo && (
-                            <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
-                              <span className="text-sm text-blue-700">Replying to comment</span>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                onClick={() => setReplyingTo(null)}
-                                className="text-blue-600 hover:text-blue-800 h-6 w-6 p-0"
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          )}
-                          <Textarea
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Share your thoughts..."
-                            rows={4}
-                            className="border-slate-300 resize-none"
-                          />
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-slate-500">
-                              {newComment.length}/1000 characters
-                            </span>
-                            <Button 
-                              onClick={submitComment}
-                              disabled={submittingComment || !newComment.trim() || newComment.length > 1000}
-                              className="bg-slate-900 hover:bg-slate-800 text-white"
-                            >
-                              <Send className="h-4 w-4 mr-2" />
-                              {submittingComment ? 'Posting...' : 'Post Comment'}
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="mb-8 p-6 bg-slate-50 rounded-xl text-center">
-                      <MessageCircle className="h-8 w-8 text-slate-400 mx-auto mb-3" />
-                      <p className="text-slate-600 mb-4">Join the conversation</p>
-                      <Link to="/auth">
-                        <Button className="bg-slate-900 hover:bg-slate-800 text-white">
-                          Sign In to Comment
-                        </Button>
-                      </Link>
-                    </div>
-                  )}
-
-                  {/* Comments List */}
-                  <div className="space-y-6">
-                    {comments.map((comment) => (
-                      <div key={comment.id} className="border-l-2 border-slate-100 pl-6">
-                        <div className="flex items-start space-x-4">
-                          <Link to={`/${comment.profiles.username}`}>
-                            <Avatar className="h-10 w-10">
-                              <AvatarImage src={comment.profiles.avatar_url} />
-                              <AvatarFallback className="bg-slate-900 text-white">
-                                {comment.profiles.display_name?.charAt(0) || comment.profiles.username.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
-                          </Link>
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <Link to={`/${comment.profiles.username}`} className="font-medium hover:text-blue-600 transition-colors">
-                                {comment.profiles.display_name || comment.profiles.username}
-                              </Link>
-                              <span className="text-sm text-slate-500">
-                                {format(new Date(comment.created_at), 'MMM dd, yyyy')}
-                              </span>
-                            </div>
-                            <p className="text-slate-700 mb-3 leading-relaxed">{comment.content}</p>
-                            <div className="flex items-center space-x-4">
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => setReplyingTo(comment.id)}
-                                className="text-slate-500 hover:text-slate-700 h-8 px-3"
-                              >
-                                <Reply className="h-3 w-3 mr-1" />
-                                Reply
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                className="text-slate-500 hover:text-slate-700 h-8 px-3"
-                              >
-                                <ThumbsUp className="h-3 w-3 mr-1" />
-                                {comment.like_count || 0}
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {comments.length === 0 && (
-                      <div className="text-center py-12">
-                        <MessageCircle className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-slate-900 mb-2">No comments yet</h3>
-                        <p className="text-slate-600">Be the first to share your thoughts!</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+              
+              {post.status === 'draft' && (
+                <Badge className="bg-orange-100 text-orange-800 border-orange-200">
+                  Draft
+                </Badge>
+              )}
             </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Author Card */}
-              <Card className="border-0 shadow-lg bg-white">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <User className="h-5 w-5 mr-2" />
-                    About the Author
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center">
-                    <Link to={`/${author.username}`}>
-                      <Avatar className="h-20 w-20 mx-auto mb-4">
-                        <AvatarImage src={author.avatar_url} />
-                        <AvatarFallback className="bg-slate-900 text-white text-2xl">
-                          {author.display_name?.charAt(0) || author.username.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Link>
-                    <Link to={`/${author.username}`} className="text-xl font-semibold hover:text-blue-600 transition-colors block mb-2">
-                      {author.display_name || author.username}
-                    </Link>
-                    {author.bio && (
-                      <p className="text-slate-600 text-sm mb-4">{author.bio}</p>
-                    )}
-                    <Link to={`/${author.username}`}>
-                      <Button variant="outline" size="sm" className="border-slate-300">
-                        View Profile
+            {/* Title */}
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              {post.title}
+            </h1>
+            
+            {/* Excerpt */}
+            {post.excerpt && (
+              <p className="text-xl text-gray-600 mb-8 leading-relaxed max-w-3xl">{post.excerpt}</p>
+            )}
+
+            {/* Tags */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-8">
+                {post.tags.map((tag: string) => (
+                  <Badge 
+                    key={tag} 
+                    variant="outline" 
+                    className="text-gray-700 border-gray-300 hover:bg-gray-50"
+                  >
+                    <Hash className="h-3 w-3 mr-1" />
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
+
+            {/* Engagement Actions */}
+            <div className="flex items-center justify-between p-4 bg-white rounded-lg border">
+              <div className="flex items-center space-x-3">
+                <Button 
+                  variant={isLiked ? "default" : "outline"} 
+                  size="sm"
+                  onClick={toggleLike}
+                  className={isLiked ? "bg-red-600 hover:bg-red-700 text-white" : "hover:bg-red-50 hover:text-red-600"}
+                >
+                  <Heart className={`h-4 w-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
+                  {likeCount.toLocaleString()}
+                </Button>
+                <Button variant="outline" size="sm" className="hover:bg-blue-50 hover:text-blue-600">
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  {comments.length}
+                </Button>
+                <Button 
+                  variant={isBookmarked ? "default" : "outline"} 
+                  size="sm"
+                  onClick={toggleBookmark}
+                  className={isBookmarked ? "bg-blue-600 hover:bg-blue-700 text-white" : "hover:bg-blue-50 hover:text-blue-600"}
+                >
+                  <Bookmark className={`h-4 w-4 mr-2 ${isBookmarked ? 'fill-current' : ''}`} />
+                  {isBookmarked ? 'Saved' : 'Save'}
+                </Button>
+              </div>
+              
+              <div className="relative">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShareDialogOpen(!shareDialogOpen)}
+                  className="hover:bg-gray-50"
+                >
+                  <Share2 className="h-4 w-4 mr-2" />
+                  Share
+                </Button>
+                
+                {shareDialogOpen && (
+                  <div className="absolute right-0 top-12 w-64 bg-white rounded-lg border shadow-lg z-50 p-4">
+                    <div className="space-y-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={copyLink}
+                        className="w-full justify-start"
+                      >
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy Link
                       </Button>
-                    </Link>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => shareToSocial('twitter')}
+                        className="w-full justify-start"
+                      >
+                        <Twitter className="h-4 w-4 mr-2" />
+                        Share on Twitter
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => shareToSocial('linkedin')}
+                        className="w-full justify-start"
+                      >
+                        <Linkedin className="h-4 w-4 mr-2" />
+                        Share on LinkedIn
+                      </Button>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Related Posts */}
-              {relatedPosts.length > 0 && (
-                <Card className="border-0 shadow-lg bg-white">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <TrendingUp className="h-5 w-5 mr-2" />
-                      Related Posts
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {relatedPosts.map((relatedPost) => (
-                        <Link
-                          key={relatedPost.id}
-                          to={`/${relatedPost.profiles.username}/${relatedPost.slug}`}
-                          className="block p-3 rounded-lg border border-slate-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200"
-                        >
-                          <h4 className="font-medium text-slate-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
-                            {relatedPost.title}
-                          </h4>
-                          {relatedPost.excerpt && (
-                            <p className="text-sm text-slate-600 line-clamp-2 mb-2">
-                              {relatedPost.excerpt}
-                            </p>
-                          )}
-                          <div className="flex items-center justify-between text-xs text-slate-500">
-                            <span>{relatedPost.profiles.display_name || relatedPost.profiles.username}</span>
-                            <div className="flex items-center space-x-1">
-                              <Eye className="h-3 w-3" />
-                              <span>{relatedPost.view_count || 0}</span>
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* Table of Contents (if post is long) */}
-              {post.markdown_content.length > 2000 && (
-                <Card className="border-0 shadow-lg bg-white">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <BookOpen className="h-5 w-5 mr-2" />
-                      Table of Contents
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-sm text-slate-600">
-                      <p>Navigate through this post using the headings in the content.</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+                )}
+              </div>
             </div>
           </div>
+
+          {/* Post Content */}
+          <div className="bg-white rounded-lg border mb-12">
+            <div className="p-8 lg:p-12">
+              <article className="prose prose-gray prose-lg max-w-none">
+                <ReactMarkdown
+                  components={{
+                    code({ node, inline, className, children, ...props }: any) {
+                      const match = /language-(\w+)/.exec(className || '');
+                      return !inline && match ? (
+                        <div className="my-6">
+                          <SyntaxHighlighter
+                            style={vscDarkPlus as any}
+                            language={match[1]}
+                            PreTag="div"
+                            className="rounded-lg"
+                            {...props}
+                          >
+                            {String(children).replace(/\n$/, '')}
+                          </SyntaxHighlighter>
+                        </div>
+                      ) : (
+                        <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono" {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                    blockquote({ children }) {
+                      return (
+                        <blockquote className="border-l-4 border-blue-500 bg-blue-50 p-6 my-8 rounded-r-lg">
+                          <div className="text-gray-700">{children}</div>
+                        </blockquote>
+                      );
+                    },
+                    h1: ({ children }) => (
+                      <h1 className="text-3xl font-bold text-gray-900 mt-10 mb-6">
+                        {children}
+                      </h1>
+                    ),
+                    h2: ({ children }) => (
+                      <h2 className="text-2xl font-bold text-gray-800 mt-8 mb-4 border-b border-gray-200 pb-2">
+                        {children}
+                      </h2>
+                    ),
+                    h3: ({ children }) => (
+                      <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">
+                        {children}
+                      </h3>
+                    ),
+                    p: ({ children }) => (
+                      <p className="text-gray-700 leading-relaxed mb-4">
+                        {children}
+                      </p>
+                    ),
+                    ul: ({ children }) => (
+                      <ul className="space-y-2 mb-4 pl-6">
+                        {children}
+                      </ul>
+                    ),
+                    ol: ({ children }) => (
+                      <ol className="space-y-2 mb-4 pl-6">
+                        {children}
+                      </ol>
+                    ),
+                    li: ({ children }) => (
+                      <li className="text-gray-700 leading-relaxed">
+                        {children}
+                      </li>
+                    ),
+                    table({ children }) {
+                      return (
+                        <div className="overflow-x-auto my-6 rounded-lg border">
+                          <table className="w-full border-collapse bg-white">
+                            {children}
+                          </table>
+                        </div>
+                      );
+                    },
+                    th({ children }) {
+                      return (
+                        <th className="bg-gray-50 px-6 py-4 text-left font-semibold text-gray-900 border-b">
+                          {children}
+                        </th>
+                      );
+                    },
+                    td({ children }) {
+                      return (
+                        <td className="px-6 py-4 text-gray-700 border-b border-gray-100">
+                          {children}
+                        </td>
+                      );
+                    },
+                    img({ src, alt }) {
+                      return (
+                        <div className="my-6">
+                          <img 
+                            src={src} 
+                            alt={alt}
+                            className="w-full rounded-lg"
+                          />
+                          {alt && (
+                            <p className="text-center text-sm text-gray-500 mt-2 italic">
+                              {alt}
+                            </p>
+                          )}
+                        </div>
+                      );
+                    }
+                  }}
+                >
+                  {post.markdown_content}
+                </ReactMarkdown>
+              </article>
+            </div>
+          </div>
+
+          {/* Comments Section */}
+          <div className="bg-white rounded-lg border">
+            <div className="p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                  <MessageSquare className="h-6 w-6 mr-3 text-blue-600" />
+                  Comments ({comments.length})
+                </h2>
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-gray-600">Sort by:</span>
+                  <Button
+                    variant={sortComments === 'newest' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setSortComments('newest')}
+                    className={sortComments === 'newest' ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
+                  >
+                    Newest
+                  </Button>
+                  <Button
+                    variant={sortComments === 'oldest' ? 'default' : 'ghost'}
+                    size="sm"
+                    onClick={() => setSortComments('oldest')}
+                    className={sortComments === 'oldest' ? 'bg-blue-600 hover:bg-blue-700 text-white' : ''}
+                  >
+                    Oldest
+                  </Button>
+                </div>
+              </div>
+
+              {/* Comment Form */}
+              {currentUser ? (
+                <div className="mb-8 p-6 bg-gray-50 rounded-lg border">
+                  <div className="flex items-start space-x-4">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={currentUserProfile?.avatar_url} />
+                      <AvatarFallback className="bg-gray-600 text-white">
+                        {currentUserProfile?.display_name?.charAt(0) || currentUser.email?.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-4">
+                      {replyingTo && (
+                        <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200">
+                          <span className="text-sm text-blue-700 font-medium">Replying to comment</span>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => setReplyingTo(null)}
+                            className="text-blue-600 hover:text-blue-800 h-6 w-6 p-0"
+                          >
+                            ×
+                          </Button>
+                        </div>
+                      )}
+                      <Textarea
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        placeholder="Share your thoughts..."
+                        rows={4}
+                        className="resize-none"
+                      />
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">
+                          {newComment.length}/1000 characters
+                        </span>
+                        <Button 
+                          onClick={submitComment}
+                          disabled={submittingComment || !newComment.trim() || newComment.length > 1000}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          {submittingComment ? 'Posting...' : 'Post Comment'}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="mb-8 p-8 bg-gray-50 rounded-lg text-center border">
+                  <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <MessageCircle className="h-8 w-8 text-gray-600" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Join the conversation</h3>
+                  <p className="text-gray-600 mb-6">Sign in to share your thoughts and engage with the community</p>
+                  <Link to="/auth">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                      Sign In to Comment
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
+              {/* Comments List */}
+              <div className="space-y-6">
+                {comments.map((comment) => (
+                  <div key={comment.id} className="border-l-4 border-blue-200 pl-6 py-4 bg-gray-50 rounded-r-lg">
+                    <div className="flex items-start space-x-4">
+                      <Link to={`/${comment.profiles.username}`}>
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={comment.profiles.avatar_url} />
+                          <AvatarFallback className="bg-gray-600 text-white">
+                            {comment.profiles.display_name?.charAt(0) || comment.profiles.username.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Link>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <Link to={`/${comment.profiles.username}`} className="font-semibold hover:text-blue-600 transition-colors">
+                            {comment.profiles.display_name || comment.profiles.username}
+                          </Link>
+                          <span className="text-sm text-gray-500">
+                            {format(new Date(comment.created_at), 'MMM dd, yyyy')}
+                          </span>
+                        </div>
+                        <p className="text-gray-700 mb-3 leading-relaxed">{comment.content}</p>
+                        <div className="flex items-center space-x-4">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setReplyingTo(comment.id)}
+                            className="text-gray-500 hover:text-blue-600 h-8 px-3"
+                          >
+                            <Reply className="h-3 w-3 mr-1" />
+                            Reply
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            className="text-gray-500 hover:text-green-600 h-8 px-3"
+                          >
+                            <ThumbsUp className="h-3 w-3 mr-1" />
+                            {comment.like_count || 0}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                {comments.length === 0 && (
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <MessageCircle className="h-10 w-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-3">No comments yet</h3>
+                    <p className="text-gray-600 max-w-md mx-auto">Be the first to share your thoughts and start the conversation!</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Related Posts */}
+          {relatedPosts.length > 0 && (
+            <div className="mt-16">
+              <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center">
+                <TrendingUp className="h-6 w-6 mr-3 text-green-600" />
+                More from {author.display_name || author.username}
+              </h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {relatedPosts.map((relatedPost) => (
+                  <Link
+                    key={relatedPost.id}
+                    to={`/${relatedPost.profiles.username}/${relatedPost.slug}`}
+                    className="group"
+                  >
+                    <div className="bg-white rounded-lg border hover:shadow-md transition-shadow duration-200 overflow-hidden">
+                      <div className="p-6">
+                        <h3 className="font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                          {relatedPost.title}
+                        </h3>
+                        {relatedPost.excerpt && (
+                          <p className="text-sm text-gray-600 line-clamp-3 mb-4">
+                            {relatedPost.excerpt}
+                          </p>
+                        )}
+                        <div className="flex items-center justify-between text-xs text-gray-500">
+                          <span>{format(new Date(relatedPost.created_at), 'MMM dd')}</span>
+                          <div className="flex items-center space-x-1">
+                            <Eye className="h-3 w-3" />
+                            <span>{relatedPost.view_count || 0}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
