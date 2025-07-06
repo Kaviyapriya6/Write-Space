@@ -196,3 +196,20 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 }
+
+export const DropdownMenuLinkItem = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Item>
+>(({ className, children, ...props }, ref) => (
+  <DropdownMenuPrimitive.Item
+    ref={ref}
+    className={cn(
+      "relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm focus:bg-accent focus:text-accent-foreground",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </DropdownMenuPrimitive.Item>
+))
+DropdownMenuLinkItem.displayName = DropdownMenuPrimitive.Item.displayName
